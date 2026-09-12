@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .database import init_db
 from .routes.auth import router as auth_router
+from .routes.catalog import router as catalog_router
 from .routes.health import router as health_router
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
@@ -31,6 +32,7 @@ app.add_middleware(
 
 app.include_router(health_router)
 app.include_router(auth_router)
+app.include_router(catalog_router)
 
 if PUBLIC_DIR.exists():
     app.mount("/public", StaticFiles(directory=str(PUBLIC_DIR)), name="public")
