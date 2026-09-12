@@ -59,7 +59,10 @@ export default function DPAForm({ data, onChange, documentId, onSaved }: DPAForm
     const title = data.company.company && data.designPartner.company
       ? `${data.company.company} / ${data.designPartner.company} DPA`
       : "Design Partner Agreement";
-    const payload = { type: "Design-Partner-Agreement.md", title, data, updated_at: new Date().toISOString() };
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const payload = { type: "Design-Partner-Agreement.md", title, data, user_id: user.id, updated_at: new Date().toISOString() };
     if (documentId) {
       const { error } = await supabase.from("documents").update(payload).eq("id", documentId);
       if (!error) { setSaveMsg("Saved"); setTimeout(() => setSaveMsg(""), 2000); }

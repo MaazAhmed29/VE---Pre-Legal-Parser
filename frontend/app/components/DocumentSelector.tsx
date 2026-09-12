@@ -34,7 +34,7 @@ export default function DocumentSelector({ onSelect }: DocumentSelectorProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/catalog")
+    fetch("/api/catalog.json")
       .then((r) => r.json())
       .then((data) => {
         setCatalog(data);

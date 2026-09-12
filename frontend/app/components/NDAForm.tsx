@@ -128,10 +128,14 @@ export default function NDAForm({ data, onChange, documentId, onSaved }: NDAForm
       ? `${data.party1.company} / ${data.party2.company} NDA`
       : "Mutual NDA";
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     const payload = {
       type: "Mutual-NDA.md",
       title,
       data,
+      user_id: user.id,
       updated_at: new Date().toISOString(),
     };
 
@@ -144,6 +148,8 @@ export default function NDAForm({ data, onChange, documentId, onSaved }: NDAForm
       if (!error) {
         setSaveMsg("Saved");
         setTimeout(() => setSaveMsg(""), 2000);
+      } else {
+        console.error("Save error:", error);
       }
     } else {
       const { data: newDoc, error } = await supabase
@@ -156,6 +162,8 @@ export default function NDAForm({ data, onChange, documentId, onSaved }: NDAForm
         setSaveMsg("Saved");
         onSaved?.(newDoc.id);
         setTimeout(() => setSaveMsg(""), 2000);
+      } else {
+        console.error("Save error:", error);
       }
     }
 

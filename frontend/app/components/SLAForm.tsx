@@ -59,7 +59,10 @@ export default function SLAForm({ data, onChange, documentId, onSaved }: SLAForm
     const title = data.licensor.company && data.licensee.company
       ? `${data.licensor.company} / ${data.licensee.company} SLA`
       : "Software License Agreement";
-    const payload = { type: "Software-License-Agreement.md", title, data, updated_at: new Date().toISOString() };
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const payload = { type: "Software-License-Agreement.md", title, data, user_id: user.id, updated_at: new Date().toISOString() };
     if (documentId) {
       const { error } = await supabase.from("documents").update(payload).eq("id", documentId);
       if (!error) { setSaveMsg("Saved"); setTimeout(() => setSaveMsg(""), 2000); }

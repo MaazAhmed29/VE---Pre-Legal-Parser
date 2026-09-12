@@ -49,7 +49,7 @@ export default function TemplatePreview({ filename }: TemplatePreviewProps) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/catalog/${filename}`)
+    fetch(`/api/templates/${filename}`)
       .then((r) => r.text())
       .then((text) => {
         setContent(text);

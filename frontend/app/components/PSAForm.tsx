@@ -59,7 +59,10 @@ export default function PSAForm({ data, onChange, documentId, onSaved }: PSAForm
     const title = data.provider.company && data.client.company
       ? `${data.provider.company} / ${data.client.company} PSA`
       : "Professional Services Agreement";
-    const payload = { type: "PSA.md", title, data, updated_at: new Date().toISOString() };
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const payload = { type: "PSA.md", title, data, user_id: user.id, updated_at: new Date().toISOString() };
     if (documentId) {
       const { error } = await supabase.from("documents").update(payload).eq("id", documentId);
       if (!error) { setSaveMsg("Saved"); setTimeout(() => setSaveMsg(""), 2000); }

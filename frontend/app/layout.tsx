@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Pre Legal",
   description:

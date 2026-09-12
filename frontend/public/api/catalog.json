@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Mutual NDA",
+    "description": "Mutual Non-Disclosure Agreement for protecting confidential information exchanged between parties during business discussions",
+    "filename": "Mutual-NDA.md",
+    "source": "https://github.com/CommonPaper/Mutual-NDA"
+  },
+  {
+    "name": "Cloud Service Agreement",
+    "description": "Common Paper standard Cloud Service Agreement for selling and buying cloud software and SaaS products",
+    "filename": "CSA.md",
+    "source": "https://github.com/CommonPaper/CSA"
+  },
+  {
+    "name": "Design Partner Agreement",
+    "description": "Agreement for early access to products in exchange for feedback and participation in design programs",
+    "filename": "Design-Partner-Agreement.md",
+    "source": "https://github.com/CommonPaper/Design-Partner-Agreement"
+  },
+  {
+    "name": "Professional Services Agreement",
+    "description": "Agreement for professional services including consulting, implementation, and custom development",
+    "filename": "PSA.md",
+    "source": "https://github.com/CommonPaper/PSA"
+  },
+  {
+    "name": "Software License Agreement",
+    "description": "Standard software license agreement for on-premise or downloadable software products",
+    "filename": "Software-License-Agreement.md",
+    "source": "https://github.com/CommonPaper/Software-License-Agreement"
+  }
+]
