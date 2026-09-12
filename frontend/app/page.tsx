@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "./context/AuthContext";
 import NDAForm from "./components/NDAForm";
 import NDAPreview from "./components/NDAPreview";
 import NDADownloadButton from "./components/NDADownloadButton";
@@ -8,6 +10,13 @@ import { NDAData, defaultNDAData } from "./types/nda";
 
 export default function Home() {
   const [data, setData] = useState<NDAData>(defaultNDAData);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  if (!user) {
+    router.push("/auth");
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -19,10 +28,22 @@ export default function Home() {
               Mutual NDA Generator
             </h1>
             <p className="text-sm text-slate-500">
-              Pre Legal Parser &mdash; Create and download Mutual NDA documents
+              Pre Legal &mdash; Create and download Mutual NDA documents
             </p>
           </div>
-          <NDADownloadButton targetId="nda-preview" />
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-slate-500">{user.email}</span>
+            <button
+              onClick={() => {
+                logout();
+                router.push("/auth");
+              }}
+              className="text-sm text-slate-500 hover:text-slate-700"
+            >
+              Sign out
+            </button>
+            <NDADownloadButton targetId="nda-preview" />
+          </div>
         </div>
       </header>
 

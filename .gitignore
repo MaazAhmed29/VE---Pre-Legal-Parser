@@ -75,3 +75,6 @@ Thumbs.db
 
 # opencode config (local only)
 opencode/
+
+# SQLite
+*.db
