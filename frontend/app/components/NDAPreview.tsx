@@ -28,25 +28,6 @@ export default function NDAPreview({ data }: NDAPreviewProps) {
         Mutual Non-Disclosure Agreement
       </h1>
 
-      <h2 className="text-base font-bold mb-3">
-        USING THIS MUTUAL NON-DISCLOSURE AGREEMENT
-      </h2>
-
-      <p className="mb-4 text-justify">
-        This Mutual Non-Disclosure Agreement (the &ldquo;MNDA&rdquo;) consists
-        of: (1) this Cover Page (&ldquo;<strong>Cover Page</strong>&rdquo;) and
-        (2) the Common Paper Mutual NDA Standard Terms Version 1.0 (&ldquo;
-        <strong>Standard Terms</strong>&rdquo;) identical to those posted at{" "}
-        <a
-          href="https://commonpaper.com/standards/mutual-nda/1.0"
-          className="text-blue-600 underline"
-        >
-          commonpaper.com/standards/mutual-nda/1.0
-        </a>
-        . Any modifications of the Standard Terms should be made on the Cover
-        Page, which will control over conflicts with the Standard Terms.
-      </p>
-
       <h3 className="font-bold mt-5 mb-1">Purpose</h3>
       <p className="italic text-slate-500 text-xs mb-1">
         How Confidential Information may be used
@@ -359,6 +340,7 @@ export default function NDAPreview({ data }: NDAPreviewProps) {
           under CC BY 4.0.
         </p>
       </div>
+
     </div>
   );
 }

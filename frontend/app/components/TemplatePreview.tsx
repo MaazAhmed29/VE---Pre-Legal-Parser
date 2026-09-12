@@ -75,10 +75,6 @@ export default function TemplatePreview({ filename }: TemplatePreviewProps) {
         className="prose prose-sm max-w-none"
         dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
       />
-      <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-        <strong>Coming soon:</strong> AI-powered form filling will be available for this document type.
-        You will be able to chat with an AI to fill in all the fields automatically.
-      </div>
     </div>
   );
 }

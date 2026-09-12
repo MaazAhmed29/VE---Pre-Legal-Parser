@@ -1,0 +1,68 @@
+"use client";
+
+import { DPAData } from "@/app/types/dpa";
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "[Date]";
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
+export default function DPAPreview({ data }: { data: DPAData }) {
+  return (
+    <div id="dpa-preview" className="bg-white text-slate-900 text-[13px] leading-relaxed font-serif" style={{ fontFamily: "Georgia, 'Times New Roman', Times, serif" }}>
+      <h1 className="text-xl font-bold text-center mb-6">Design Partner Agreement</h1>
+
+      <h3 className="font-bold mt-5 mb-1">Purpose</h3>
+      <p className="mb-4 pl-4 border-l-2 border-slate-300">{data.purpose || "[Purpose]"}</p>
+
+      <h3 className="font-bold mt-5 mb-1">Effective Date</h3>
+      <p className="mb-4 pl-4 border-l-2 border-slate-300">{formatDate(data.effectiveDate)}</p>
+
+      <h3 className="font-bold mt-5 mb-1">Term</h3>
+      <ul className="pl-4 mb-4 space-y-1">
+        <li className="flex items-start gap-2">
+          <span className="mt-0.5">{data.termAutoRenew ? "[x]" : "[ ]"}</span>
+          <span>[{data.termMonths} month(s)] auto-renewing.</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="mt-0.5">{!data.termAutoRenew ? "[x]" : "[ ]"}</span>
+          <span>[{data.termMonths} month(s)] fixed term.</span>
+        </li>
+      </ul>
+
+      <h3 className="font-bold mt-5 mb-1">Governing Law &amp; Jurisdiction</h3>
+      <p className="mb-1">Governing Law: {data.governingLaw || "[Governing Law]"}</p>
+      <p className="mb-4">Jurisdiction: {data.jurisdiction || "[Jurisdiction]"}</p>
+
+      {data.modifications && (
+        <>
+          <h3 className="font-bold mt-5 mb-1">Modifications</h3>
+          <p className="mb-4 pl-4 border-l-2 border-slate-300 whitespace-pre-wrap">{data.modifications}</p>
+        </>
+      )}
+
+      <p className="mt-6 mb-4 text-center text-sm">By signing this Cover Page, each party agrees to enter into this Design Partner Agreement as of the Effective Date.</p>
+
+      <table className="w-full border-collapse text-xs mt-4 mb-6">
+        <thead>
+          <tr>
+            <th className="border border-slate-300 p-2 bg-slate-50 w-1/4"></th>
+            <th className="border border-slate-300 p-2 bg-slate-50 text-center w-[37.5%]">COMPANY</th>
+            <th className="border border-slate-300 p-2 bg-slate-50 text-center w-[37.5%]">DESIGN PARTNER</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td className="border border-slate-300 p-2 font-medium">Signature</td><td className="border border-slate-300 p-2 h-8"></td><td className="border border-slate-300 p-2 h-8"></td></tr>
+          <tr><td className="border border-slate-300 p-2 font-medium">Print Name</td><td className="border border-slate-300 p-2">{data.company.name || ""}</td><td className="border border-slate-300 p-2">{data.designPartner.name || ""}</td></tr>
+          <tr><td className="border border-slate-300 p-2 font-medium">Title</td><td className="border border-slate-300 p-2">{data.company.title || ""}</td><td className="border border-slate-300 p-2">{data.designPartner.title || ""}</td></tr>
+          <tr><td className="border border-slate-300 p-2 font-medium">Company</td><td className="border border-slate-300 p-2">{data.company.company || ""}</td><td className="border border-slate-300 p-2">{data.designPartner.company || ""}</td></tr>
+          <tr><td className="border border-slate-300 p-2 font-medium">Notice Address</td><td className="border border-slate-300 p-2">{data.company.noticeAddress || ""}</td><td className="border border-slate-300 p-2">{data.designPartner.noticeAddress || ""}</td></tr>
+          <tr><td className="border border-slate-300 p-2 font-medium">Date</td><td className="border border-slate-300 p-2 h-8"></td><td className="border border-slate-300 p-2 h-8"></td></tr>
+        </tbody>
+      </table>
+
+      <p className="text-center text-xs text-slate-500 italic mb-8">Common Paper Design Partner Agreement (Version 1.0) free to use under CC BY 4.0.</p>
+    </div>
+  );
+}

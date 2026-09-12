@@ -1,15 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { NDAData, PartyInfo } from "@/app/types/nda";
+import { supabase } from "@/app/lib/supabase";
 
 interface NDAFormProps {
   data: NDAData;
   onChange: (data: NDAData) => void;
+  documentId?: string | null;
+  onSaved?: (id: string) => void;
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200 pb-2 mb-4">
+    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-3">
       {children}
     </h3>
   );
@@ -30,13 +34,13 @@ function Input({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-slate-700">{label}</label>
+      <label className="text-sm font-medium text-zinc-700">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
+        className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-400 transition-colors"
       />
     </div>
   );
@@ -57,13 +61,13 @@ function Textarea({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-slate-700">{label}</label>
+      <label className="text-sm font-medium text-zinc-700">{label}</label>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors resize-none"
+        className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-400 transition-colors resize-none"
       />
     </div>
   );
@@ -103,19 +107,89 @@ function PartyFields({
         label="Notice Address"
         value={party.noticeAddress}
         onChange={(v) => onChange({ ...party, noticeAddress: v })}
-        placeholder="email@example.com or postal address"
+        placeholder="email@example.com"
       />
     </div>
   );
 }
 
-export default function NDAForm({ data, onChange }: NDAFormProps) {
+export default function NDAForm({ data, onChange, documentId, onSaved }: NDAFormProps) {
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState("");
+
   const update = (partial: Partial<NDAData>) =>
     onChange({ ...data, ...partial });
 
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMsg("");
+
+    const title = data.party1.company && data.party2.company
+      ? `${data.party1.company} / ${data.party2.company} NDA`
+      : "Mutual NDA";
+
+    const payload = {
+      type: "Mutual-NDA.md",
+      title,
+      data,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (documentId) {
+      const { error } = await supabase
+        .from("documents")
+        .update(payload)
+        .eq("id", documentId);
+
+      if (!error) {
+        setSaveMsg("Saved");
+        setTimeout(() => setSaveMsg(""), 2000);
+      }
+    } else {
+      const { data: newDoc, error } = await supabase
+        .from("documents")
+        .insert(payload)
+        .select("id")
+        .single();
+
+      if (!error && newDoc) {
+        setSaveMsg("Saved");
+        onSaved?.(newDoc.id);
+        setTimeout(() => setSaveMsg(""), 2000);
+      }
+    }
+
+    setSaving(false);
+  };
+
   return (
-    <div className="flex flex-col gap-6">
-      <SectionTitle>MNDA Details</SectionTitle>
+    <div className="flex flex-col gap-5">
+      <div className="flex items-center justify-between">
+        <SectionTitle>MNDA Details</SectionTitle>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-700 bg-zinc-50 border border-zinc-200 rounded-md hover:bg-zinc-100 disabled:opacity-50 transition-colors"
+        >
+          {saving ? (
+            "Saving..."
+          ) : saveMsg ? (
+            <>
+              <svg className="w-3.5 h-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              {saveMsg}
+            </>
+          ) : (
+            <>
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              Save
+            </>
+          )}
+        </button>
+      </div>
 
       <Textarea
         label="Purpose"
@@ -132,7 +206,7 @@ export default function NDAForm({ data, onChange }: NDAFormProps) {
       />
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-slate-700">
+        <label className="text-sm font-medium text-zinc-700">
           MNDA Term
         </label>
         <div className="flex items-center gap-3">
@@ -143,23 +217,23 @@ export default function NDAForm({ data, onChange }: NDAFormProps) {
             onChange={(e) =>
               update({ mndaTermYears: parseInt(e.target.value) || 1 })
             }
-            className="w-20 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-20 rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-400"
           />
-          <span className="text-sm text-slate-600">year(s)</span>
-          <label className="flex items-center gap-2 ml-2 text-sm text-slate-700">
+          <span className="text-sm text-zinc-500">year(s)</span>
+          <label className="flex items-center gap-2 ml-2 text-sm text-zinc-700">
             <input
               type="checkbox"
               checked={data.mndaTermExpires}
               onChange={(e) => update({ mndaTermExpires: e.target.checked })}
-              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              className="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900/20"
             />
-            Expires from Effective Date
+            Expires
           </label>
         </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-slate-700">
+        <label className="text-sm font-medium text-zinc-700">
           Term of Confidentiality
         </label>
         <div className="flex items-center gap-3">
@@ -174,19 +248,19 @@ export default function NDAForm({ data, onChange }: NDAFormProps) {
                     confidentialityYears: parseInt(e.target.value) || 1,
                   })
                 }
-                className="w-20 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-20 rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-400"
               />
-              <span className="text-sm text-slate-600">year(s)</span>
+              <span className="text-sm text-zinc-500">year(s)</span>
             </>
           )}
-          <label className="flex items-center gap-2 ml-2 text-sm text-slate-700">
+          <label className="flex items-center gap-2 ml-2 text-sm text-zinc-700">
             <input
               type="checkbox"
               checked={data.confidentialityPerpetual}
               onChange={(e) =>
                 update({ confidentialityPerpetual: e.target.checked })
               }
-              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              className="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900/20"
             />
             In perpetuity
           </label>
@@ -204,7 +278,7 @@ export default function NDAForm({ data, onChange }: NDAFormProps) {
         label="Jurisdiction"
         value={data.jurisdiction}
         onChange={(v) => update({ jurisdiction: v })}
-        placeholder='e.g. courts located in New Castle, DE'
+        placeholder='e.g. New Castle, DE'
       />
 
       <Textarea
@@ -212,10 +286,10 @@ export default function NDAForm({ data, onChange }: NDAFormProps) {
         value={data.modifications}
         onChange={(v) => update({ modifications: v })}
         placeholder="List any modifications to the MNDA"
-        rows={4}
+        rows={3}
       />
 
-      <div className="border-t border-slate-200 pt-6">
+      <div className="border-t border-zinc-100 pt-5">
         <PartyFields
           label="Party 1"
           party={data.party1}
@@ -223,7 +297,7 @@ export default function NDAForm({ data, onChange }: NDAFormProps) {
         />
       </div>
 
-      <div className="border-t border-slate-200 pt-6">
+      <div className="border-t border-zinc-100 pt-5">
         <PartyFields
           label="Party 2"
           party={data.party2}

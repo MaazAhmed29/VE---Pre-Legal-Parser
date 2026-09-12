@@ -5,7 +5,7 @@ import { AuthProvider } from "./context/AuthContext";
 export const metadata: Metadata = {
   title: "Pre Legal",
   description:
-    "Draft legal agreements with AI-powered document generation.",
+    "Draft legal agreements with confidence. Professional document templates for NDAs, software licenses, and more.",
 };
 
 export default function RootLayout({

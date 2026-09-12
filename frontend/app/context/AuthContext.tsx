@@ -1,68 +1,54 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-
-interface User {
-  email: string;
-}
+import { supabase } from "@/app/lib/supabase";
+import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<{ error?: string }>;
+  signup: (email: string, password: string) => Promise<{ error?: string }>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const VALID_CREDENTIALS = [
-  { email: "admin@prelegal.com", password: "admin123" },
-  { email: "demo@prelegal.com", password: "demo123" },
-];
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem("prelegal_user");
-    if (saved) {
-      try {
-        setUser(JSON.parse(saved));
-      } catch {
-        localStorage.removeItem("prelegal_user");
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
       }
-    }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    const match = VALID_CREDENTIALS.find(
-      (c) => c.email === email && c.password === password
-    );
-    if (match) {
-      const u = { email: match.email };
-      setUser(u);
-      localStorage.setItem("prelegal_user", JSON.stringify(u));
-      return true;
-    }
-    return false;
+  const login = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    return { error: error?.message };
   };
 
-  const signup = async (email: string, password: string): Promise<boolean> => {
-    const exists = VALID_CREDENTIALS.find((c) => c.email === email);
-    if (exists) return false;
-    const u = { email };
-    setUser(u);
-    localStorage.setItem("prelegal_user", JSON.stringify(u));
-    return true;
+  const signup = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({ email, password });
+    return { error: error?.message };
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("prelegal_user");
+  const logout = async () => {
+    await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

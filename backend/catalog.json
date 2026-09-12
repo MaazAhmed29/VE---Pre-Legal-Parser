@@ -6,12 +6,6 @@
     "source": "https://github.com/CommonPaper/Mutual-NDA"
   },
   {
-    "name": "Mutual NDA - Standard Terms",
-    "description": "Standard Terms for the Common Paper Mutual Non-Disclosure Agreement Version 1.0",
-    "filename": "Mutual-NDA-Standard-Terms.md",
-    "source": "https://github.com/CommonPaper/Mutual-NDA"
-  },
-  {
     "name": "Cloud Service Agreement",
     "description": "Common Paper standard Cloud Service Agreement for selling and buying cloud software and SaaS products",
     "filename": "CSA.md",
@@ -24,46 +18,10 @@
     "source": "https://github.com/CommonPaper/Design-Partner-Agreement"
   },
   {
-    "name": "Service Level Agreement",
-    "description": "Service Level Agreement defining uptime targets, response times, and remedies for cloud services",
-    "filename": "SLA.md",
-    "source": "https://github.com/CommonPaper/SLA"
-  },
-  {
-    "name": "Data Processing Agreement",
-    "description": "Data Processing Agreement for GDPR compliance when processing personal data on behalf of customers",
-    "filename": "DPA.md",
-    "source": "https://github.com/CommonPaper/DPA"
-  },
-  {
     "name": "Professional Services Agreement",
     "description": "Agreement for professional services including consulting, implementation, and custom development",
     "filename": "PSA.md",
     "source": "https://github.com/CommonPaper/PSA"
-  },
-  {
-    "name": "AI Addendum",
-    "description": "Addendum for agreements involving AI services, covering model training, output ownership, and usage restrictions",
-    "filename": "AI-Addendum.md",
-    "source": "https://github.com/CommonPaper/AI-Addendum"
-  },
-  {
-    "name": "Pilot Agreement",
-    "description": "Short-term trial or evaluation agreement for testing products before committing to longer-term deals",
-    "filename": "Pilot-Agreement.md",
-    "source": "https://github.com/CommonPaper/Pilot-Agreement"
-  },
-  {
-    "name": "Partnership Agreement",
-    "description": "Agreement for business partnerships including cooperation, trademark licensing, and payment terms",
-    "filename": "Partnership-Agreement.md",
-    "source": "https://github.com/CommonPaper/Partnership-Agreement"
-  },
-  {
-    "name": "Business Associate Agreement",
-    "description": "HIPAA-compliant Business Associate Agreement for handling protected health information (PHI)",
-    "filename": "BAA.md",
-    "source": "https://github.com/CommonPaper/BAA"
   },
   {
     "name": "Software License Agreement",
