@@ -18,6 +18,7 @@ const config: Config = {
           "Arial",
           "sans-serif",
         ],
+        signika: ["var(--font-signika)", "sans-serif"],
       },
       boxShadow: {
         "card": "0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04)",

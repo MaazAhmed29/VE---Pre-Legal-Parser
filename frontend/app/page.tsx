@@ -1,155 +1,156 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "./context/AuthContext";
-import Header from "./components/Header";
-import DocumentSelector from "./components/DocumentSelector";
-import MyDocuments from "./components/MyDocuments";
-import NDADownloadButton from "./components/NDADownloadButton";
+import Link from "next/link";
 
-import NDAForm from "./components/NDAForm";
-import NDAPreview from "./components/NDAPreview";
-import { defaultNDAData } from "./types/nda";
-
-import CSAForm from "./components/CSAForm";
-import CSAPreview from "./components/CSAPreview";
-import { defaultCSAData } from "./types/csa";
-
-import DPAForm from "./components/DPAForm";
-import DPAPreview from "./components/DPAPreview";
-import { defaultDPAData } from "./types/dpa";
-
-import PSAForm from "./components/PSAForm";
-import PSAPreview from "./components/PSAPreview";
-import { defaultPSAData } from "./types/psa";
-
-import SLAForm from "./components/SLAForm";
-import SLAPreview from "./components/SLAPreview";
-import { defaultSLAData } from "./types/sla";
-
-type View = "home" | "editor";
-
-const DOC_CONFIG: Record<string, { name: string; Form: React.ComponentType<{ data: unknown; onChange: (d: unknown) => void; documentId?: string | null; onSaved?: (id: string) => void }>; Preview: React.ComponentType<{ data: unknown }>; defaultData: unknown; targetId: string }> = {
-  "Mutual-NDA.md": { name: "Mutual NDA", Form: NDAForm as never, Preview: NDAPreview as never, defaultData: defaultNDAData, targetId: "nda-preview" },
-  "CSA.md": { name: "Cloud Service Agreement", Form: CSAForm as never, Preview: CSAPreview as never, defaultData: defaultCSAData, targetId: "csa-preview" },
-  "Design-Partner-Agreement.md": { name: "Design Partner Agreement", Form: DPAForm as never, Preview: DPAPreview as never, defaultData: defaultDPAData, targetId: "dpa-preview" },
-  "PSA.md": { name: "Professional Services Agreement", Form: PSAForm as never, Preview: PSAPreview as never, defaultData: defaultPSAData, targetId: "psa-preview" },
-  "Software-License-Agreement.md": { name: "Software License Agreement", Form: SLAForm as never, Preview: SLAPreview as never, defaultData: defaultSLAData, targetId: "sla-preview" },
-};
-
-export default function Home() {
-  const [data, setData] = useState<Record<string, unknown>>(defaultNDAData as unknown as Record<string, unknown>);
-  const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
-  const [documentId, setDocumentId] = useState<string | null>(null);
-  const [view, setView] = useState<View>("home");
-  const [docsRefreshKey, setDocsRefreshKey] = useState(0);
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
-        <div className="text-sm text-zinc-400">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    router.push("/auth");
-    return null;
-  }
-
-  const config = selectedDoc ? DOC_CONFIG[selectedDoc] : null;
-
-  const handleSelectDoc = (filename: string) => {
-    setSelectedDoc(filename);
-    setDocumentId(null);
-    const cfg = DOC_CONFIG[filename];
-    setData(cfg ? (cfg.defaultData as Record<string, unknown>) : {});
-    setView("editor");
-  };
-
-  const handleOpenDoc = (doc: { id: string; type: string; data: Record<string, unknown> }) => {
-    setSelectedDoc(doc.type);
-    setDocumentId(doc.id);
-    if (doc.data) {
-      setData(doc.data);
-    }
-    setView("editor");
-  };
-
-  const handleBack = () => {
-    setSelectedDoc(null);
-    setDocumentId(null);
-    setData(defaultNDAData as unknown as Record<string, unknown>);
-    setView("home");
-    setDocsRefreshKey((k) => k + 1);
-  };
-
-  const handleSaved = (id: string) => {
-    setDocumentId(id);
-    setDocsRefreshKey((k) => k + 1);
-  };
-
-  const headerTitle = view === "home" ? "Pre Legal" : config?.name ?? "Document";
-  const headerSubtitle = view === "home" ? undefined : "Fill in the fields and download your document";
-
+function FloatingDoc({
+  className,
+  animClass,
+  delayClass,
+  width,
+  height,
+  lines = 4,
+}: {
+  className: string;
+  animClass: string;
+  delayClass: string;
+  width: string;
+  height: string;
+  lines?: number;
+}) {
   return (
-    <div className="min-h-screen bg-zinc-50 flex flex-col">
-      <Header
-        title={headerTitle}
-        subtitle={headerSubtitle}
-        showBack={view === "editor"}
-        onBack={handleBack}
-        actions={
-          view === "editor" && config ? (
-            <NDADownloadButton targetId={config.targetId} />
-          ) : undefined
-        }
-      />
+    <div
+      className={`absolute ${className} ${animClass} ${delayClass}`}
+    >
+      <div
+        className={`${width} ${height} rounded-lg border border-zinc-900/[0.15] bg-white p-3 space-y-2 shadow-sm`}
+      >
+        {Array.from({ length: lines }).map((_, i) => (
+          <div
+            key={i}
+            className="h-[3px] rounded-full bg-zinc-900/[0.15]"
+            style={{ width: `${60 + Math.random() * 40}%` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-      <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {view === "home" ? (
-          <div className="space-y-8">
-            <section>
-              <h2 className="text-sm font-medium text-zinc-900 mb-3">Your Documents</h2>
-              <MyDocuments onLoad={handleOpenDoc} refreshKey={docsRefreshKey} />
-            </section>
-            <section>
-              <h2 className="text-sm font-medium text-zinc-900 mb-3">New Document</h2>
-              <DocumentSelector onSelect={handleSelectDoc} />
-            </section>
+export default function HeroPage() {
+  return (
+    <div className="relative min-h-screen bg-zinc-50 flex flex-col overflow-hidden">
+      {/* Floating documents background */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        {/* Doc 1 - top left, small */}
+        <FloatingDoc
+          className="top-[12%] left-[8%] opacity-50 -rotate-6"
+          animClass="animate-doc-1"
+          delayClass="animation-delay-0s"
+          width="w-24"
+          height="h-32"
+          lines={4}
+        />
+
+        {/* Doc 2 - top right, medium */}
+        <FloatingDoc
+          className="top-[8%] right-[12%] opacity-55 rotate-3"
+          animClass="animate-doc-2"
+          delayClass="animation-delay-2s"
+          width="w-28"
+          height="h-36"
+          lines={5}
+        />
+
+        {/* Doc 3 - mid left, large */}
+        <FloatingDoc
+          className="top-[35%] left-[5%] opacity-50 -rotate-3"
+          animClass="animate-doc-3"
+          delayClass="animation-delay-4s"
+          width="w-32"
+          height="h-44"
+          lines={6}
+        />
+
+        {/* Doc 4 - mid right, small */}
+        <FloatingDoc
+          className="top-[45%] right-[6%] opacity-60 rotate-6"
+          animClass="animate-doc-4"
+          delayClass="animation-delay-6s"
+          width="w-20"
+          height="h-28"
+          lines={3}
+        />
+
+        {/* Doc 5 - bottom left, medium */}
+        <FloatingDoc
+          className="bottom-[18%] left-[15%] opacity-50 rotate-2"
+          animClass="animate-doc-5"
+          delayClass="animation-delay-8s"
+          width="w-26"
+          height="h-36"
+          lines={5}
+        />
+
+        {/* Doc 6 - bottom right, small */}
+        <FloatingDoc
+          className="bottom-[15%] right-[10%] opacity-65 -rotate-4"
+          animClass="animate-doc-6"
+          delayClass="animation-delay-10s"
+          width="w-22"
+          height="h-30"
+          lines={4}
+        />
+      </div>
+
+      {/* Navigation */}
+      <nav className="relative z-10 w-full px-6 py-5 flex items-center justify-between max-w-6xl mx-auto animate-fade-in">
+        <span className="font-signika text-lg font-bold text-zinc-900 tracking-tight">
+          Document Legalizer
+        </span>
+        <Link
+          href="/auth"
+          className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+        >
+          Sign in
+        </Link>
+      </nav>
+
+      {/* Hero content */}
+      <main className="relative z-10 flex-1 flex items-center justify-center px-6">
+        <div className="max-w-2xl text-center">
+          <h1 className="font-signika text-5xl sm:text-6xl font-bold text-zinc-900 tracking-tight leading-tight animate-fade-in-up">
+            Document Legalizer
+          </h1>
+
+          <p className="mt-5 text-lg text-zinc-500 leading-relaxed animate-fade-in-up animation-delay-200">
+            Draft legal agreements with confidence. Professional templates for NDAs,
+            software licenses, service agreements, and more.
+          </p>
+
+          <div className="mt-10 animate-fade-in-up animation-delay-400">
+            <Link
+              href="/auth"
+              className="inline-block px-8 py-3 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 transition-colors"
+            >
+              Get started
+            </Link>
           </div>
-        ) : config ? (
-          <div className="flex flex-col lg:flex-row gap-5">
-            <div className="w-full lg:w-[400px] lg:flex-shrink-0">
-              <div className="bg-white rounded-xl border border-zinc-200 p-5 max-h-[calc(100vh-100px)] overflow-y-auto lg:sticky lg:top-5">
-                <config.Form data={data} onChange={(d: unknown) => setData(d as Record<string, unknown>)} documentId={documentId} onSaved={handleSaved} />
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="bg-white rounded-xl border border-zinc-200 p-6 max-h-[calc(100vh-100px)] overflow-y-auto lg:sticky lg:top-5">
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-100">
-                  <h2 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Preview</h2>
-                  <span className="text-[11px] text-zinc-400">Live</span>
-                </div>
-                <config.Preview data={data} />
-              </div>
-            </div>
+
+          <div className="mt-16 flex items-center justify-center gap-8 text-xs text-zinc-400 animate-fade-in animation-delay-600">
+            <span>NDAs</span>
+            <span className="w-1 h-1 rounded-full bg-zinc-300"></span>
+            <span>License Agreements</span>
+            <span className="w-1 h-1 rounded-full bg-zinc-300"></span>
+            <span>Service Contracts</span>
           </div>
-        ) : (
-          <div className="text-center py-20 text-sm text-zinc-400">Unknown document type</div>
-        )}
+        </div>
       </main>
 
-      <footer className="border-t border-zinc-200 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <p className="text-[11px] text-zinc-400 text-center">
-            Pre Legal provides document templates for informational purposes only.
-            Consult a licensed attorney before relying on any generated document.
-          </p>
-        </div>
+      {/* Footer */}
+      <footer className="relative z-10 py-6 text-center animate-fade-in animation-delay-600">
+        <p className="text-[11px] text-zinc-400">
+          Document Legalizer provides templates for informational purposes only.
+        </p>
       </footer>
     </div>
   );
