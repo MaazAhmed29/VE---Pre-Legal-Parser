@@ -49,3 +49,135 @@ body {
   background-color: #dbeafe;
   color: #1e40af;
 }
+
+/* Floating documents animations */
+@keyframes doc-float-1 {
+  0%, 100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  25% {
+    transform: translateY(-35px) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(-4deg);
+  }
+  75% {
+    transform: translateY(-40px) rotate(-2deg);
+  }
+}
+
+@keyframes doc-float-2 {
+  0%, 100% {
+    transform: translateX(0) translateY(0) rotate(2deg);
+  }
+  33% {
+    transform: translateX(30px) translateY(-30px) rotate(4deg);
+  }
+  66% {
+    transform: translateX(-20px) translateY(-12px) rotate(1deg);
+  }
+}
+
+@keyframes doc-float-3 {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-40px) rotate(-3deg) scale(1.01);
+  }
+}
+
+@keyframes doc-float-4 {
+  0%, 100% {
+    transform: translateX(0) translateY(0) rotate(-2deg);
+  }
+  40% {
+    transform: translateX(-25px) translateY(-35px) rotate(1deg);
+  }
+  80% {
+    transform: translateX(15px) translateY(-10px) rotate(-3deg);
+  }
+}
+
+@keyframes doc-drift {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(35px) translateY(-25px);
+  }
+  50% {
+    transform: translateX(15px) translateY(-40px);
+  }
+  75% {
+    transform: translateX(-30px) translateY(-18px);
+  }
+}
+
+.animate-doc-1 {
+  animation: doc-float-1 20s ease-in-out infinite;
+}
+
+.animate-doc-2 {
+  animation: doc-float-2 24s ease-in-out infinite;
+}
+
+.animate-doc-3 {
+  animation: doc-float-3 22s ease-in-out infinite;
+}
+
+.animate-doc-4 {
+  animation: doc-float-4 18s ease-in-out infinite;
+}
+
+.animate-doc-5 {
+  animation: doc-drift 26s ease-in-out infinite;
+}
+
+.animate-doc-6 {
+  animation: doc-float-1 28s ease-in-out infinite reverse;
+}
+
+.animation-delay-0s { animation-delay: 0s; }
+.animation-delay-2s { animation-delay: 2s; }
+.animation-delay-4s { animation-delay: 4s; }
+.animation-delay-6s { animation-delay: 6s; }
+.animation-delay-8s { animation-delay: 8s; }
+.animation-delay-10s { animation-delay: 10s; }
+
+/* Hero text animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out both;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animation-delay-600 {
+  animation-delay: 0.6s;
+}
